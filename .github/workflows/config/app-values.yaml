@@ -1,0 +1,3 @@
+app:
+  name: test-app
+  localReplicaCount: 3
