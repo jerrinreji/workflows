@@ -1,0 +1,20 @@
+name: CI -  Test Workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  sanity-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run sanity check
+        run: |
+          echo "GitHub Actions test"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
