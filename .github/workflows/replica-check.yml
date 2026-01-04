@@ -1,0 +1,39 @@
+name: Validate Replica Count
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  validate-replicas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+      - name: Validate localReplicaCount
+        run: |
+          set -euo pipefail
+
+          REPLICAS=$(yq '.app.localReplicaCount' config/app-values.yaml)
+
+          echo "localReplicaCount = $REPLICAS"
+
+          if [ "$REPLICAS" -lt 2 ]; then
+            echo " Replica count must be at least 2 for HA"
+            exit 1
+          fi
+
+          if [ "$REPLICAS" -gt 10 ]; then
+            echo " Replica count too high (cost risk)"
+            exit 1
+          fi
+
+          echo " Replica count validation passed"
